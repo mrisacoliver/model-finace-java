@@ -1,0 +1,60 @@
+Exemple
+
+--
+Clone the Repository
+
+Bash 
+
+git clone [https://github.com/mrisacoliver/financial-ledger-engine.git](https://github.com/mrisacoliver/financial-ledger-engine.git)
+cd financial-ledger-engine
+
+--------------
+
+Start Infrastructure via Docker Compose
+Start PostgreSQL, Redis, Kafka, and Zookeeper:
+
+docker compose up -d
+
+--------------------------
+
+Run Application
+
+./mvnw spring-boot:run
+
+--------------------------------
+
+
+Testing
+Run unit, integration, and domain validation tests:
+
+./mvnw clean test
+
+----------------------------------------
+
+Example Request
+
+POST /api/v1/ledger/entries
+
+{
+  "idempotencyKey": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+  "description": "Invoice Payment Processing",
+  "lines": [
+    {
+      "accountId": "ACC-1001-CASH",
+      "type": "DEBIT",
+      "amount": 1500.00,
+      "currency": "BRL"
+    },
+    {
+      "accountId": "ACC-2002-REVENUE",
+      "type": "CREDIT",
+      "amount": 1500.00,
+      "currency": "BRL"
+    }
+  ]
+}
+
+Author & ContactIsaque Oliveira — Senior Software Engineer & Financial Systems Specialist   
+LinkedIn: linkedin.com/in/mrisacoliver   
+GitHub: github.com/mrisacoliver   
+
