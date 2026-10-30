@@ -99,3 +99,52 @@ graph TD
         AccountingService -->|Cache Balance State| Redis[(Redis - Fast Balance Cache)]
         AuditWorker -->|Store Immutable Log| MongoAudit[(MongoDB - Forensic Audit Trail)]
     end
+    ------
+
+    # 🏦 Financial Ledger Engine
+
+An event-driven, high-throughput double-entry accounting engine built for modern financial platforms, ERPs, and banking systems. Designed to guarantee **ACID transaction integrity**, strict balance validation, and immutable audit trails at scale.
+
+---
+
+## 📐 Architecture Overview
+
+The system follows **Clean Architecture** and **Domain-Driven Design (DDD)** principles. Incoming transactions are validated for debit/credit equality before being committed to PostgreSQL and published asynchronously to Kafka for downstream audit processing.
+
+```mermaid
+graph TD
+    %% Clientes e Entrada
+    ClientApp[ERP / Banking Services / Payment Gateway] -->|POST /api/v1/ledger/entries| Gateway[Spring Cloud Gateway]
+
+    %% Camada de Segurança e Roteamento
+    subgraph Edge & Security Layer
+        Gateway -->|Validate JWT| OAuthServer[OAuth2 / OIDC Server]
+    end
+
+    %% Core Application Layer (Financial Ledger Engine)
+    subgraph Financial Ledger Engine - Java 21 / Spring Boot
+        Gateway -->|HTTPS/REST| Controller[Ledger Entry Controller]
+        
+        subgraph Domain Model & Validation
+            Controller -->|Validate Balance| AccountingService[Double-Entry Ledger Service]
+            AccountingService -->|Enforce Balancing| BalanceValidator[Debit/Credit Equality Engine]
+        end
+
+        subgraph Event Generation
+            AccountingService -->|Publish Domain Events| EventPublisher[Spring Event Publisher]
+        end
+    end
+
+    %% Camada de Eventos Assíncronos
+    subgraph Event Broker & Messaging
+        EventPublisher -->|Produce Message| Kafka[Apache Kafka - Ledger Events Topic]
+        Kafka -->|Consume Transaction Logs| AuditWorker[Audit & Compliance Worker - Go]
+        Kafka -->|Consume for Analytics| AnalyticsWorker[Financial Reporting Worker]
+    end
+
+    %% Camada de Persistência e Cache
+    subgraph Persistence & Audit Layer
+        AccountingService -->|ACID Ledger Entries| Postgres[(PostgreSQL - Relational Ledger DB)]
+        AccountingService -->|Cache Balance State| Redis[(Redis - Fast Balance Cache)]
+        AuditWorker -->|Store Immutable Log| MongoAudit[(MongoDB - Forensic Audit Trail)]
+    end
