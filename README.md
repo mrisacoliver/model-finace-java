@@ -1,4 +1,4 @@
-# model-finace-java
+# model-finance-java
 Financial systems review, IT auditing, and digital forensics.
 
 # Hi there, I'm Isaque Oliveira 👋
